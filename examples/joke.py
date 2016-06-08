@@ -51,7 +51,7 @@ def merge(session_id, context, entities, msg):
 def error(session_id, context, e):
     print(str(e))
 
-def select_joke(session_id, context):
+def select_joke(session_id, context, entities):
     jokes = all_jokes[context['cat'] or 'default']
     shuffle(jokes)
     context['joke'] = jokes[0]

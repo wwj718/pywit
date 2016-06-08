@@ -29,7 +29,7 @@ def merge(session_id, context, entities, msg):
 def error(session_id, context, e):
     print(str(e))
 
-def fetch_weather(session_id, context):
+def fetch_weather(session_id, context, entities):
     context['forecast'] = 'sunny'
     return context
 

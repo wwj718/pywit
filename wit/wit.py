@@ -35,7 +35,7 @@ def validate_actions(logger, actions):
     learn_more = 'Learn more at https://wit.ai/docs/quickstart'
     if not isinstance(actions, dict):
         logger.warn('The second parameter should be a dictionary.')
-    for action in ['say', 'merge', 'error']:
+    for action in ['say', 'error']:
         if action not in actions:
             logger.warn('The \'' + action + '\' action is missing. ' +
                             learn_more)
@@ -93,7 +93,7 @@ class Wit:
                 raise WitError('unknown action: say')
             self.logger.info('Executing say with: {}'.format(rst['msg'].encode('utf8')))
             self.actions['say'](session_id, dict(context), rst['msg'])
-        elif rst['type'] == 'merge':
+        elif rst['type'] == 'merge': # DEPRECATED
             if 'merge' not in self.actions:
                 raise WitError('unknown action: merge')
             self.logger.info('Executing merge')
@@ -106,7 +106,8 @@ class Wit:
             if rst['action'] not in self.actions:
                 raise WitError('unknown action: ' + rst['action'])
             self.logger.info('Executing action {}'.format(rst['action']))
-            context = self.actions[rst['action']](session_id, dict(context))
+            context = self.actions[rst['action']](session_id, dict(context),
+                                                  rst['entities'])
             if context is None:
                 self.logger.warn('missing context - did you forget to return it?')
                 context = {}
