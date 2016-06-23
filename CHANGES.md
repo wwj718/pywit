@@ -1,3 +1,5 @@
+## v4.0.0
+
 - warns instead of throwing when validating actions
 
 ## v3.4.1

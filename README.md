@@ -32,62 +32,30 @@ See the `examples` folder for examples.
 ### Wit class
 
 The Wit constructor takes the following parameters:
-* `token` - the access token of your Wit instance
-* `actions` - the dictionary with your actions
+* `access_token` - the access token of your Wit instance
+* `actions` - (optional if you only use `message()`) the dictionary with your actions
 
-`actions` has action names as keys and action implementations as values.
-You need to provide at least an implementation for the special actions `say`, `merge` and `error`.
+`actions` has action names as keys and action implementations as values. A minimal `actions` dict looks like this:
 
-A minimal `actions` dict looks like this:
 ```python
-def say(session_id, context, msg):
-    print(msg)
-
-def merge(session_id, context, entities, msg):
-    return context
-
-def error(session_id, context, e):
-    print(str(e))
+def send(request, response):
+    print('Sending to user...', response['text'])
+def my_action(request):
+    print('Received from user...', request['text'])
 
 actions = {
-    'say': say,
-    'merge': merge,
-    'error': error,
+    'send': send,
+    'my_action': my_action,
 }
 ```
-
-A custom action takes the following parameters:
-* `session_id` - a unique identifier describing the user session
-* `context` - the dictionary representing the session state
 
 Example:
 ```python
 from wit import Wit
-client = Wit(token, actions)
+client = Wit(access_token=access_token, actions=actions)
 ```
 
-### Logging
-
-Default logging is to `STDOUT` with `INFO` level.
-
-You can set your logging level as follows:
-``` python
-from wit import Wit
-import logging
-client = Wit(token, actions)
-client.logger.setLevel(logging.WARNING)
-```
-
-You can also specify a custom logger object in the Wit constructor:
-``` python
-from wit import Wit
-client = Wit(token, actions, logger=custom_logger)
-```
-
-See the [logging module](https://docs.python.org/2/library/logging.html) and
-[logging.config](https://docs.python.org/2/library/logging.config.html#module-logging.config) docs for more information.
-
-### message
+### .message()
 
 The Wit [message API](https://wit.ai/docs/http/20160330#get-intent-via-text-link).
 
@@ -100,7 +68,7 @@ resp = client.message('what is the weather in London?')
 print('Yay, got Wit.ai response: ' + str(resp))
 ```
 
-### run_actions
+### .run_actions()
 
 A higher-level method to the Wit converse API.
 
@@ -120,7 +88,7 @@ context2 = client.run_actions(session_id, 'and in Brussels?', context1)
 print('The session state is now: ' + str(context2))
 ```
 
-### converse
+### .converse()
 
 The low-level Wit [converse API](https://wit.ai/docs/http/20160330#converse-link).
 
@@ -137,7 +105,7 @@ print('Yay, got Wit.ai response: ' + str(resp))
 
 See the [docs](https://wit.ai/docs) for more information.
 
-### interactive
+### .interactive()
 
 Starts an interactive conversation with your bot.
 
@@ -147,3 +115,24 @@ client.interactive()
 ```
 
 See the [docs](https://wit.ai/docs) for more information.
+
+### Logging
+
+Default logging is to `STDOUT` with `INFO` level.
+
+You can set your logging level as follows:
+``` python
+from wit import Wit
+import logging
+client = Wit(token, actions)
+client.logger.setLevel(logging.WARNING)
+```
+
+You can also specify a custom logger object in the Wit constructor:
+``` python
+from wit import Wit
+client = Wit(access_token=access_token, actions=actions, logger=custom_logger)
+```
+
+See the [logging module](https://docs.python.org/2/library/logging.html) and
+[logging.config](https://docs.python.org/2/library/logging.config.html#module-logging.config) docs for more information.
