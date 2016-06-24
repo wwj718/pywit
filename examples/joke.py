@@ -2,13 +2,13 @@ from random import shuffle
 import sys
 from wit import Wit
 
-# Joke example
-# See https://wit.ai/patapizza/example-joke
-
 if len(sys.argv) != 2:
     print('usage: python ' + sys.argv[0] + ' <wit-token>')
     exit(1)
 access_token = sys.argv[1]
+
+# Joke example
+# See https://wit.ai/patapizza/example-joke
 
 all_jokes = {
     'chuck': [

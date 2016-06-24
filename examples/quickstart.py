@@ -1,13 +1,13 @@
 import sys
 from wit import Wit
 
-# Quickstart example
-# See https://wit.ai/l5t/Quickstart
-
 if len(sys.argv) != 2:
     print('usage: python ' + sys.argv[0] + ' <wit-token>')
     exit(1)
 access_token = sys.argv[1]
+
+# Quickstart example
+# See https://wit.ai/l5t/Quickstart
 
 def first_entity_value(entities, entity):
     if entity not in entities:

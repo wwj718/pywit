@@ -12,10 +12,12 @@ LEARN_MORE = 'Learn more at https://wit.ai/docs/quickstart'
 class WitError(Exception):
     pass
 
-def req(access_token, meth, path, params, **kwargs):
+def req(logger, access_token, meth, path, params, **kwargs):
+    full_url = WIT_API_HOST + path
+    logger.debug('%s %s %s', meth, full_url, params)
     rsp = requests.request(
         meth,
-        WIT_API_HOST + path,
+        full_url,
         headers={
             'authorization': 'Bearer ' + access_token,
             'accept': 'application/vnd.wit.20160330+json'
@@ -29,6 +31,8 @@ def req(access_token, meth, path, params, **kwargs):
     json = rsp.json()
     if 'error' in json:
         raise WitError('Wit responded with an error: ' + json['error'])
+
+    logger.debug('%s %s %s', meth, full_url, json)
     return json
 
 def validate_actions(logger, actions):
@@ -55,24 +59,19 @@ class Wit:
             self.actions = validate_actions(self.logger, actions)
 
     def message(self, msg):
-        self.logger.debug('Message request: msg=%r', msg)
         params = {}
         if msg:
             params['q'] = msg
-        resp = req(self.access_token, 'GET', '/message', params)
-        self.logger.debug('Message response: %s', resp)
+        resp = req(self.logger, self.access_token, 'GET', '/message', params)
         return resp
 
     def converse(self, session_id, message, context=None):
-        self.logger.debug('Converse request: session_id=%s msg=%r context=%s',
-                          session_id, message, context)
         if context is None:
             context = {}
         params = {'session_id': session_id}
         if message:
             params['q'] = message
-        resp = req(self.access_token, 'POST', '/converse', params, json=context)
-        self.logger.debug('Message response: %s', resp)
+        resp = req(self.logger, self.access_token, 'POST', '/converse', params, json=context)
         return resp
 
     def __run_actions(self, session_id, message, context, i):
@@ -123,7 +122,8 @@ class Wit:
     def run_actions(self, session_id, message, context=None,
                     max_steps=DEFAULT_MAX_STEPS):
         if not self.actions:
-            raise WitError('You must provide the `actions` parameter to be able to use runActions. ' + LEARN_MORE)
+            self.throw_must_have_actions()
+
         if context is None:
             context = {}
         return self.__run_actions(session_id, message, context, max_steps)
@@ -136,7 +136,7 @@ class Wit:
         max_steps -- max number of steps for run_actions.
         """
         if not self.actions:
-            raise WitError('You must provide the `actions` parameter to be able to use runActions. ' + LEARN_MORE)
+            self.throw_must_have_actions()
         if max_steps <= 0:
             raise WitError('max iterations reached')
         if context is None:
@@ -159,3 +159,6 @@ class Wit:
     def throw_if_action_missing(self, action_name):
         if action_name not in self.actions:
             raise WitError('unknown action: ' + action_name)
+
+    def throw_must_have_actions(self):
+        raise WitError('You must provide the `actions` parameter to be able to use runActions. ' + LEARN_MORE)

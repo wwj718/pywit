@@ -35,9 +35,13 @@ The Wit constructor takes the following parameters:
 * `access_token` - the access token of your Wit instance
 * `actions` - (optional if you only use `message()`) the dictionary with your actions
 
-`actions` has action names as keys and action implementations as values. A minimal `actions` dict looks like this:
+`actions` has action names as keys and action implementations as values.
+
+A minimal example looks like this:
 
 ```python
+from wit import Wit
+
 def send(request, response):
     print('Sending to user...', response['text'])
 def my_action(request):
@@ -47,11 +51,7 @@ actions = {
     'send': send,
     'my_action': my_action,
 }
-```
 
-Example:
-```python
-from wit import Wit
 client = Wit(access_token=access_token, actions=actions)
 ```
 
