@@ -7,7 +7,7 @@ if len(sys.argv) != 2:
 access_token = sys.argv[1]
 
 # Quickstart example
-# See https://wit.ai/l5t/Quickstart
+# See https://wit.ai/ar7hur/Quickstart
 
 def first_entity_value(entities, entity):
     if entity not in entities:
@@ -20,25 +20,23 @@ def first_entity_value(entities, entity):
 def send(request, response):
     print(response['text'])
 
-def merge(request):
+def get_forecast(request):
     context = request['context']
     entities = request['entities']
 
     loc = first_entity_value(entities, 'location')
     if loc:
-        context['loc'] = loc
-    return context
+        context['forecast'] = 'sunny'
+    else:
+        context['missingLocation'] = True
+        if context.get('forecast') is not None:
+            del context['forecast']
 
-def fetch_weather(request):
-    context = request['context']
-
-    context['forecast'] = 'sunny'
     return context
 
 actions = {
     'send': send,
-    'merge': merge,
-    'fetch-weather': fetch_weather,
+    'getForecast': get_forecast,
 }
 
 client = Wit(access_token=access_token, actions=actions)

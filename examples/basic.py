@@ -9,12 +9,8 @@ access_token = sys.argv[1]
 def send(request, response):
     print(response['text'])
 
-def merge(request):
-    return request['context']
-
 actions = {
     'send': send,
-    'merge': merge,
 }
 
 client = Wit(access_token=access_token, actions=actions)
